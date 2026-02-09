@@ -1,6 +1,5 @@
 import { InterventionRow } from './InterventionRow';
 import { AddIntervention } from '../forms';
-import { TAU } from '../../lib/bayesian';
 import { probPositive } from '../../lib/bayesian';
 import { Intervention, Posterior } from '../../types';
 
@@ -8,6 +7,7 @@ interface InterventionListProps {
   interventions: Intervention[];
   posterior: Posterior;
   displaySamples: number[] | null;
+  tau: number;
   getInterventionGroup: (index: number) => string | null;
   onRemove: (index: number) => void;
   onRename: (index: number, newName: string) => void;
@@ -19,6 +19,7 @@ export function InterventionList({
   interventions,
   posterior,
   displaySamples,
+  tau,
   getInterventionGroup,
   onRemove,
   onRename,
@@ -27,8 +28,8 @@ export function InterventionList({
 }: InterventionListProps) {
   // Compute minimum std across all interventions for consistent curve scaling
   const minStd = interventions.length > 0
-    ? Math.min(...interventions.map((_, i) => posterior.std[i] || TAU))
-    : TAU;
+    ? Math.min(...interventions.map((_, i) => posterior.std[i] || tau))
+    : tau;
 
   return (
     <section className="interventions-section">
@@ -48,9 +49,9 @@ export function InterventionList({
             name={int.name}
             disabled={int.disabled}
             mean={posterior.mean[i] || 0}
-            std={posterior.std[i] || TAU}
+            std={posterior.std[i] || tau}
             minStd={minStd}
-            pPositive={probPositive(posterior.mean[i] || 0, posterior.std[i] || TAU)}
+            pPositive={probPositive(posterior.mean[i] || 0, posterior.std[i] || tau)}
             sample={displaySamples ? displaySamples[i] : null}
             isActive={displaySamples ? displaySamples[i] > 0 : false}
             groupName={getInterventionGroup(i)}

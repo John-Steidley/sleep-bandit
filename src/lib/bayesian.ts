@@ -15,11 +15,6 @@ import {
   normalCDF,
 } from './matrix';
 
-// Model constants
-export const BASELINE = 69;
-export const TAU = 2.5;      // Prior standard deviation
-export const SIGMA = 12;     // Noise standard deviation
-
 /**
  * Compute posterior distribution over intervention effects
  * using Bayesian linear regression with conjugate Gaussian prior
@@ -27,11 +22,9 @@ export const SIGMA = 12;     // Noise standard deviation
 export function computePosterior(
   interventions: string[],
   observations: Observation[],
-  config?: { baseline?: number; tau?: number; sigma?: number }
+  config: { baseline: number; tau: number; sigma: number }
 ): Posterior {
-  const baseline = config?.baseline ?? BASELINE;
-  const tau = config?.tau ?? TAU;
-  const sigma = config?.sigma ?? SIGMA;
+  const { baseline, tau, sigma } = config;
 
   const k = interventions.length;
   if (k === 0) return { mean: [], cov: [], std: [], precision: [] };

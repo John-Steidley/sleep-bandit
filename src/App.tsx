@@ -86,6 +86,7 @@ export default function App() {
           <ObservationHistory
             observations={state.observations}
             interventions={interventionNames}
+            baseline={state.config.baseline}
           />
           <GroupManager
             groups={state.groups || []}
@@ -120,6 +121,7 @@ export default function App() {
             pending={state.pendingNight}
             interventions={interventionNames}
             posteriorMean={posterior.mean}
+            baseline={state.config.baseline}
             onRecordScore={handleRecordScore}
             onPreview={handlePreviewScore}
             onCancel={handleCancelPending}
@@ -154,6 +156,7 @@ export default function App() {
           interventions={state.interventions}
           posterior={posterior}
           displaySamples={displaySamples}
+          tau={state.config.tau}
           getInterventionGroup={getInterventionGroup}
           onRemove={removeIntervention}
           onRename={renameIntervention}

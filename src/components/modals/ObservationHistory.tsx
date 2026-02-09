@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
 import { Observation } from '../../types';
-import { BASELINE } from '../../lib/bayesian';
 
 interface ObservationHistoryProps {
   observations: Observation[];
   interventions: string[];
+  baseline: number;
 }
 
-export function ObservationHistory({ observations, interventions }: ObservationHistoryProps) {
+export function ObservationHistory({ observations, interventions, baseline }: ObservationHistoryProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   if (!isOpen) {
@@ -46,7 +46,7 @@ export function ObservationHistory({ observations, interventions }: ObservationH
                 <span className="history-date">
                   {new Date(obs.date).toLocaleDateString()}
                 </span>
-                <span className={`history-score ${obs.score >= BASELINE ? 'good' : 'bad'}`}>
+                <span className={`history-score ${obs.score >= baseline ? 'good' : 'bad'}`}>
                   {obs.score}
                 </span>
                 <div className="history-interventions">

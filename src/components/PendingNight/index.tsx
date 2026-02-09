@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
 import { PendingNight as PendingNightType, Notes } from '../../types';
-import { BASELINE } from '../../lib/bayesian';
 
 interface PendingNightProps {
   pending: PendingNightType;
   interventions: string[];
   posteriorMean: number[];
+  baseline: number;
   onRecordScore: (score: number, notes: Notes) => void;
   onPreview: (score: number) => void;
   onCancel: () => void;
@@ -16,6 +16,7 @@ export function PendingNight({
   pending,
   interventions,
   posteriorMean,
+  baseline,
   onRecordScore,
   onPreview,
   onCancel,
@@ -34,7 +35,7 @@ export function PendingNight({
 
   // Compute predicted score using posterior mean (average estimate)
   const predictedScoreAvg = useMemo(() => {
-    let expected = BASELINE;
+    let expected = baseline;
     for (let i = 0; i < interventions.length; i++) {
       if (isAsleep) {
         // Morning mode: assume all rolled interventions were completed
@@ -53,7 +54,7 @@ export function PendingNight({
 
   // Compute predicted score using Thompson samples (sampled estimate)
   const predictedScoreSampled = useMemo(() => {
-    let expected = BASELINE;
+    let expected = baseline;
     const samples = pending.samples || [];
     for (let i = 0; i < interventions.length; i++) {
       if (isAsleep) {
