@@ -1,7 +1,15 @@
+export interface Tag {
+  label: string;
+  value: boolean;
+}
+
+export interface NoteTagDefinition {
+  label: string;
+  description: string;
+}
+
 export interface Notes {
-  wokeUpLong: boolean;
-  nightmares: boolean;
-  nightSweats: boolean;
+  tags: Tag[];
   text: string;
 }
 
@@ -41,6 +49,7 @@ export interface AppState {
   pendingNight: PendingNight | null;
   groups: Group[];
   config: StatisticalConfig;
+  noteTagDefinitions: NoteTagDefinition[];
 }
 
 export interface Posterior {

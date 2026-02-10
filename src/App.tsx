@@ -87,6 +87,7 @@ export default function App() {
             observations={state.observations}
             interventions={interventionNames}
             baseline={state.config.baseline}
+            noteTagDefinitions={state.noteTagDefinitions}
           />
           <GroupManager
             groups={state.groups || []}
@@ -122,6 +123,7 @@ export default function App() {
             interventions={interventionNames}
             posteriorMean={posterior.mean}
             baseline={state.config.baseline}
+            noteTagDefinitions={state.noteTagDefinitions}
             onRecordScore={handleRecordScore}
             onPreview={handlePreviewScore}
             onCancel={handleCancelPending}

@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useCallback } from 'react';
 import { AppState, Group, Intervention, Notes, Observation, Posterior, StatisticalConfig } from '../types';
-import { loadData, saveData } from '../lib/storage';
+import { loadData, saveData, migrateNoteTags } from '../lib/storage'; // MIGRATION (NOTE TAGS): remove migrateNoteTags import
+import { DEFAULT_NOTE_TAG_DEFINITIONS } from '../lib/noteTags';
 import { sampleFromPosterior, computePosterior, probPositive } from '../lib/bayesian';
 import { UpdateReportData } from '../types';
 
@@ -135,7 +136,8 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...action.data,
         groups: action.data.groups || [],
-        config: action.data.config || state.config
+        config: action.data.config || state.config,
+        noteTagDefinitions: action.data.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS
       };
 
     case 'IMPORT_HISTORICAL':
@@ -152,7 +154,8 @@ function reducer(state: AppState, action: Action): AppState {
         observations: [],
         pendingNight: null,
         groups: [],
-        config: state.config
+        config: state.config,
+        noteTagDefinitions: state.noteTagDefinitions
       };
 
     case 'UPDATE_CONFIG':
@@ -368,10 +371,11 @@ export function useAppState() {
         type: 'IMPORT_DATA',
         data: {
           interventions: imported.interventions,
-          observations: imported.observations,
+          observations: migrateNoteTags(imported.observations), // MIGRATION (NOTE TAGS)
           pendingNight: imported.pendingNight || null,
           groups: imported.groups || [],
-          config: imported.config || state.config
+          config: imported.config || state.config,
+          noteTagDefinitions: imported.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS
         }
       });
     } else {

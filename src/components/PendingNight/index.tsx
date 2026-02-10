@@ -1,11 +1,12 @@
 import { useState, useMemo } from 'react';
-import { PendingNight as PendingNightType, Notes } from '../../types';
+import { PendingNight as PendingNightType, NoteTagDefinition, Notes } from '../../types';
 
 interface PendingNightProps {
   pending: PendingNightType;
   interventions: string[];
   posteriorMean: number[];
   baseline: number;
+  noteTagDefinitions: NoteTagDefinition[];
   onRecordScore: (score: number, notes: Notes) => void;
   onPreview: (score: number) => void;
   onCancel: () => void;
@@ -17,6 +18,7 @@ export function PendingNight({
   interventions,
   posteriorMean,
   baseline,
+  noteTagDefinitions,
   onRecordScore,
   onPreview,
   onCancel,
@@ -24,12 +26,11 @@ export function PendingNight({
 }: PendingNightProps) {
   const [score, setScore] = useState('');
   const [completed, setCompleted] = useState<Record<number, boolean>>({});
-  const [notes, setNotes] = useState<Notes>({
-    wokeUpLong: false,
-    nightmares: false,
-    nightSweats: false,
+  const emptyNotes: Notes = {
+    tags: noteTagDefinitions.map(d => ({ label: d.label, value: false })),
     text: ''
-  });
+  };
+  const [notes, setNotes] = useState<Notes>(emptyNotes);
 
   const isAsleep = pending.asleep;
 
@@ -84,7 +85,7 @@ export function PendingNight({
       onRecordScore(numScore, notes);
       setScore('');
       setCompleted({});
-      setNotes({ wokeUpLong: false, nightmares: false, nightSweats: false, text: '' });
+      setNotes(emptyNotes);
     }
   };
 
@@ -107,10 +108,12 @@ export function PendingNight({
     }));
   };
 
-  const toggleNote = (key: keyof Omit<Notes, 'text'>) => {
+  const toggleTag = (tagLabel: string) => {
     setNotes(prev => ({
       ...prev,
-      [key]: !prev[key]
+      tags: prev.tags.map(t =>
+        t.label === tagLabel ? { ...t, value: !t.value } : t
+      )
     }));
   };
 
@@ -197,33 +200,17 @@ export function PendingNight({
           <div className="notes-section">
             <h4>Morning Notes</h4>
             <div className="notes-checkboxes">
-              <div className={`note-checkbox ${notes.wokeUpLong ? 'checked' : ''}`}>
-                <input
-                  type="checkbox"
-                  id="note-woke-up"
-                  checked={notes.wokeUpLong}
-                  onChange={() => toggleNote('wokeUpLong')}
-                />
-                <label htmlFor="note-woke-up">Woke up in middle of night (1+ hours)</label>
-              </div>
-              <div className={`note-checkbox ${notes.nightmares ? 'checked' : ''}`}>
-                <input
-                  type="checkbox"
-                  id="note-nightmares"
-                  checked={notes.nightmares}
-                  onChange={() => toggleNote('nightmares')}
-                />
-                <label htmlFor="note-nightmares">Had nightmares</label>
-              </div>
-              <div className={`note-checkbox ${notes.nightSweats ? 'checked' : ''}`}>
-                <input
-                  type="checkbox"
-                  id="note-night-sweats"
-                  checked={notes.nightSweats}
-                  onChange={() => toggleNote('nightSweats')}
-                />
-                <label htmlFor="note-night-sweats">Had night sweats</label>
-              </div>
+              {notes.tags.map(tag => (
+                <div key={tag.label} className={`note-checkbox ${tag.value ? 'checked' : ''}`}>
+                  <input
+                    type="checkbox"
+                    id={`note-${tag.label}`}
+                    checked={tag.value}
+                    onChange={() => toggleTag(tag.label)}
+                  />
+                  <label htmlFor={`note-${tag.label}`}>{noteTagDefinitions.find(d => d.label === tag.label)?.description ?? tag.label}</label>
+                </div>
+              ))}
             </div>
             <textarea
               className="notes-textarea"

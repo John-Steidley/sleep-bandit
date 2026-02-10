@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
-import { Observation } from '../../types';
+import { Observation, NoteTagDefinition } from '../../types';
 
 interface ObservationHistoryProps {
   observations: Observation[];
   interventions: string[];
   baseline: number;
+  noteTagDefinitions: NoteTagDefinition[];
 }
 
-export function ObservationHistory({ observations, interventions, baseline }: ObservationHistoryProps) {
+export function ObservationHistory({ observations, interventions, baseline, noteTagDefinitions }: ObservationHistoryProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   if (!isOpen) {
@@ -37,10 +38,9 @@ export function ObservationHistory({ observations, interventions, baseline }: Ob
             const activeNames = interventions.filter((_, i) =>
               obs.interventions && obs.interventions[i]
             );
-            const noteLabels: string[] = [];
-            if (obs.notes?.wokeUpLong) noteLabels.push('woke up 1+ hr');
-            if (obs.notes?.nightmares) noteLabels.push('nightmares');
-            if (obs.notes?.nightSweats) noteLabels.push('night sweats');
+            const noteLabels = (obs.notes?.tags ?? [])
+              .filter(t => t.value)
+              .map(t => noteTagDefinitions.find(d => d.label === t.label)?.description ?? t.label);
             return (
               <div key={idx} className="history-item">
                 <span className="history-date">
