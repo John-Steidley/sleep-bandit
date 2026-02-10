@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { PendingNight as PendingNightType, NoteTagDefinition, Notes } from '../../types';
+import { PendingNight as PendingNightType, NoteTagDefinition, ChecklistItemDefinition, Notes } from '../../types';
 
 interface PendingNightProps {
   pending: PendingNightType;
@@ -7,6 +7,7 @@ interface PendingNightProps {
   posteriorMean: number[];
   baseline: number;
   noteTagDefinitions: NoteTagDefinition[];
+  checklistItems: ChecklistItemDefinition[];
   onRecordScore: (score: number, notes: Notes) => void;
   onPreview: (score: number) => void;
   onCancel: () => void;
@@ -19,6 +20,7 @@ export function PendingNight({
   posteriorMean,
   baseline,
   noteTagDefinitions,
+  checklistItems,
   onRecordScore,
   onPreview,
   onCancel,
@@ -26,6 +28,7 @@ export function PendingNight({
 }: PendingNightProps) {
   const [score, setScore] = useState('');
   const [completed, setCompleted] = useState<Record<number, boolean>>({});
+  const [checklistCompleted, setChecklistCompleted] = useState<Record<number, boolean>>({});
   const emptyNotes: Notes = {
     tags: noteTagDefinitions.map(d => ({ label: d.label, value: false })),
     text: ''
@@ -117,6 +120,13 @@ export function PendingNight({
     }));
   };
 
+  const toggleChecklistItem = (index: number) => {
+    setChecklistCompleted(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
   return (
     <div className="pending-night">
       <div className="pending-header">
@@ -155,6 +165,27 @@ export function PendingNight({
                   </label>
                 </div>
               )
+            ))}
+          </div>
+        )}
+        {!isAsleep && checklistItems.length > 0 && (
+          <div className="evening-checklist">
+            <div className="evening-checklist-divider" />
+            {checklistItems.map((item, idx) => (
+              <div
+                key={idx}
+                className={`evening-checklist-item ${checklistCompleted[idx] ? 'completed' : ''}`}
+              >
+                <input
+                  type="checkbox"
+                  id={`checklist-${idx}`}
+                  checked={checklistCompleted[idx] || false}
+                  onChange={() => toggleChecklistItem(idx)}
+                />
+                <label htmlFor={`checklist-${idx}`}>
+                  {item.description}
+                </label>
+              </div>
             ))}
           </div>
         )}

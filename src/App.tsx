@@ -3,7 +3,7 @@ import { useAppState } from './hooks/useAppState';
 import { usePosterior } from './hooks/usePosterior';
 import { InterventionList } from './components/InterventionList';
 import { PendingNight } from './components/PendingNight';
-import { ObservationHistory, GroupManager, NoteTagManager, DataManager, UpdateReport } from './components/modals';
+import { ObservationHistory, GroupManager, NoteTagManager, ChecklistManager, DataManager, UpdateReport } from './components/modals';
 import { CovarianceMatrix, PrecisionMatrix } from './components/visualizations';
 import { UpdateReportData, Notes } from './types';
 
@@ -19,6 +19,9 @@ export default function App() {
     updateGroup,
     addNoteTag,
     updateNoteTag,
+    addChecklistItem,
+    updateChecklistItem,
+    removeChecklistItem,
     getInterventionGroup,
     rollTonight,
     markAsleep,
@@ -103,6 +106,12 @@ export default function App() {
             onAdd={addNoteTag}
             onUpdate={updateNoteTag}
           />
+          <ChecklistManager
+            checklistItems={state.checklistItems || []}
+            onAdd={addChecklistItem}
+            onUpdate={updateChecklistItem}
+            onRemove={removeChecklistItem}
+          />
           <DataManager
             data={state}
             onImport={importData}
@@ -131,6 +140,7 @@ export default function App() {
             posteriorMean={posterior.mean}
             baseline={state.config.baseline}
             noteTagDefinitions={state.noteTagDefinitions}
+            checklistItems={state.checklistItems || []}
             onRecordScore={handleRecordScore}
             onPreview={handlePreviewScore}
             onCancel={handleCancelPending}

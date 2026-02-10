@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useCallback } from 'react';
-import { AppState, Group, Intervention, NoteTagDefinition, Notes, Observation, Posterior, StatisticalConfig } from '../types';
+import { AppState, ChecklistItemDefinition, Group, Intervention, NoteTagDefinition, Notes, Observation, Posterior, StatisticalConfig } from '../types';
 import { loadData, saveData } from '../lib/storage';
 import { DEFAULT_NOTE_TAG_DEFINITIONS } from '../lib/noteTags';
 import { sampleFromPosterior, computePosterior, probPositive } from '../lib/bayesian';
@@ -15,6 +15,9 @@ type Action =
   | { type: 'UPDATE_GROUP'; index: number; group: Group }
   | { type: 'ADD_NOTE_TAG'; tag: NoteTagDefinition }
   | { type: 'UPDATE_NOTE_TAG'; index: number; tag: NoteTagDefinition }
+  | { type: 'ADD_CHECKLIST_ITEM'; item: ChecklistItemDefinition }
+  | { type: 'UPDATE_CHECKLIST_ITEM'; index: number; item: ChecklistItemDefinition }
+  | { type: 'REMOVE_CHECKLIST_ITEM'; index: number }
   | { type: 'ROLL_TONIGHT'; samples: number[]; activeInterventions: boolean[] }
   | { type: 'MARK_ASLEEP' }
   | { type: 'RECORD_SCORE'; observation: Observation }
@@ -115,6 +118,26 @@ function reducer(state: AppState, action: Action): AppState {
         )
       };
 
+    case 'ADD_CHECKLIST_ITEM':
+      return {
+        ...state,
+        checklistItems: [...(state.checklistItems || []), action.item]
+      };
+
+    case 'UPDATE_CHECKLIST_ITEM':
+      return {
+        ...state,
+        checklistItems: (state.checklistItems || []).map((item, i) =>
+          i === action.index ? action.item : item
+        )
+      };
+
+    case 'REMOVE_CHECKLIST_ITEM':
+      return {
+        ...state,
+        checklistItems: (state.checklistItems || []).filter((_, i) => i !== action.index)
+      };
+
     case 'ROLL_TONIGHT':
       return {
         ...state,
@@ -153,7 +176,8 @@ function reducer(state: AppState, action: Action): AppState {
         ...action.data,
         groups: action.data.groups || [],
         config: action.data.config || state.config,
-        noteTagDefinitions: action.data.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS
+        noteTagDefinitions: action.data.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS,
+        checklistItems: action.data.checklistItems || []
       };
 
     case 'IMPORT_HISTORICAL':
@@ -171,7 +195,8 @@ function reducer(state: AppState, action: Action): AppState {
         pendingNight: null,
         groups: [],
         config: state.config,
-        noteTagDefinitions: state.noteTagDefinitions
+        noteTagDefinitions: state.noteTagDefinitions,
+        checklistItems: state.checklistItems
       };
 
     case 'UPDATE_CONFIG':
@@ -238,6 +263,18 @@ export function useAppState() {
 
   const updateNoteTag = useCallback((index: number, tag: NoteTagDefinition) => {
     dispatch({ type: 'UPDATE_NOTE_TAG', index, tag });
+  }, []);
+
+  const addChecklistItem = useCallback((item: ChecklistItemDefinition) => {
+    dispatch({ type: 'ADD_CHECKLIST_ITEM', item });
+  }, []);
+
+  const updateChecklistItem = useCallback((index: number, item: ChecklistItemDefinition) => {
+    dispatch({ type: 'UPDATE_CHECKLIST_ITEM', index, item });
+  }, []);
+
+  const removeChecklistItem = useCallback((index: number) => {
+    dispatch({ type: 'REMOVE_CHECKLIST_ITEM', index });
   }, []);
 
   const getInterventionGroup = useCallback((interventionIndex: number): string | null => {
@@ -399,7 +436,8 @@ export function useAppState() {
           pendingNight: imported.pendingNight || null,
           groups: imported.groups || [],
           config: imported.config || state.config,
-          noteTagDefinitions: imported.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS
+          noteTagDefinitions: imported.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS,
+          checklistItems: imported.checklistItems || []
         }
       });
     } else {
@@ -473,6 +511,9 @@ export function useAppState() {
     updateGroup,
     addNoteTag,
     updateNoteTag,
+    addChecklistItem,
+    updateChecklistItem,
+    removeChecklistItem,
     getInterventionGroup,
     rollTonight,
     markAsleep,

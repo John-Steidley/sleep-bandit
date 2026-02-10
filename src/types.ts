@@ -8,6 +8,11 @@ export interface NoteTagDefinition {
   description: string;
 }
 
+export interface ChecklistItemDefinition {
+  label: string;
+  description: string;
+}
+
 export interface Notes {
   tags: Tag[];
   text: string;
@@ -50,6 +55,7 @@ export interface AppState {
   groups: Group[];
   config: StatisticalConfig;
   noteTagDefinitions: NoteTagDefinition[];
+  checklistItems: ChecklistItemDefinition[];
 }
 
 export interface Posterior {

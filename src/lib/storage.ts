@@ -13,7 +13,8 @@ const DEFAULT_STATE: AppState = {
   pendingNight: null,
   groups: [],
   config: { baseline: 69, tau: 2.5, sigma: 12 },
-  noteTagDefinitions: DEFAULT_NOTE_TAG_DEFINITIONS
+  noteTagDefinitions: DEFAULT_NOTE_TAG_DEFINITIONS,
+  checklistItems: []
 };
 
 /**
@@ -46,7 +47,8 @@ export function loadData(): AppState {
         observations: parsed.observations || [],
         groups: parsed.groups || [],
         config: { ...DEFAULT_STATE.config, ...parsed.config },
-        noteTagDefinitions: parsed.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS
+        noteTagDefinitions: parsed.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS,
+        checklistItems: parsed.checklistItems || []
       };
     }
   } catch (e) {
