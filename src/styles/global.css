@@ -38,8 +38,6 @@ body {
   color: #6b7280;
   font-size: 0.85rem;
   margin: 0;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
 .controls {
@@ -134,8 +132,6 @@ body {
 
 .predicted-label {
   font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: #9ca3af;
 }
 
@@ -413,8 +409,6 @@ body {
   border-radius: 3px;
   white-space: nowrap;
   align-self: flex-start;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
 .intervention-name {
@@ -519,8 +513,6 @@ body {
 
 .stat-label {
   font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: #6b7280;
   white-space: nowrap;
 }
@@ -896,8 +888,6 @@ body {
 
 .data-section h4 {
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: #9ca3af;
   margin: 0 0 0.75rem 0;
 }
@@ -1021,8 +1011,6 @@ body {
 
 .notes-section h4 {
   font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
   color: #9ca3af;
   margin: 0 0 0.75rem 0;
   font-weight: 500;
@@ -1206,8 +1194,6 @@ body {
 
 .active-badge {
   font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   padding: 0.2rem 0.5rem;
   background: rgba(99, 102, 241, 0.3);
   color: #e879f9;
@@ -1229,8 +1215,6 @@ body {
 
 .update-stat-label {
   font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   color: #6b7280;
   flex-shrink: 0;
 }
@@ -1338,8 +1322,6 @@ body {
 
 .preview-badge {
   font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
   padding: 0.25rem 0.5rem;
   background: rgba(139, 92, 246, 0.3);
   color: #f0abfc;
@@ -1476,8 +1458,6 @@ body {
 
 .add-group-form h4 {
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: #9ca3af;
   margin: 0 0 1rem 0;
 }
@@ -1674,8 +1654,6 @@ body {
 
 .note-tag-form h4 {
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: #9ca3af;
   margin: 0 0 1rem 0;
 }
@@ -1886,8 +1864,6 @@ body {
 
 .checklist-form h4 {
   font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: #9ca3af;
   margin: 0 0 1rem 0;
 }
