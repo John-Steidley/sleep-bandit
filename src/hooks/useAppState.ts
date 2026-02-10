@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useCallback } from 'react';
-import { AppState, Group, Intervention, Notes, Observation, Posterior, StatisticalConfig } from '../types';
+import { AppState, Group, Intervention, NoteTagDefinition, Notes, Observation, Posterior, StatisticalConfig } from '../types';
 import { loadData, saveData } from '../lib/storage';
 import { DEFAULT_NOTE_TAG_DEFINITIONS } from '../lib/noteTags';
 import { sampleFromPosterior, computePosterior, probPositive } from '../lib/bayesian';
@@ -13,6 +13,8 @@ type Action =
   | { type: 'ADD_GROUP'; group: Group }
   | { type: 'REMOVE_GROUP'; index: number }
   | { type: 'UPDATE_GROUP'; index: number; group: Group }
+  | { type: 'ADD_NOTE_TAG'; tag: NoteTagDefinition }
+  | { type: 'UPDATE_NOTE_TAG'; index: number; tag: NoteTagDefinition }
   | { type: 'ROLL_TONIGHT'; samples: number[]; activeInterventions: boolean[] }
   | { type: 'MARK_ASLEEP' }
   | { type: 'RECORD_SCORE'; observation: Observation }
@@ -96,6 +98,20 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         groups: (state.groups || []).map((g, i) =>
           i === action.index ? action.group : g
+        )
+      };
+
+    case 'ADD_NOTE_TAG':
+      return {
+        ...state,
+        noteTagDefinitions: [...state.noteTagDefinitions, action.tag]
+      };
+
+    case 'UPDATE_NOTE_TAG':
+      return {
+        ...state,
+        noteTagDefinitions: state.noteTagDefinitions.map((t, i) =>
+          i === action.index ? action.tag : t
         )
       };
 
@@ -214,6 +230,14 @@ export function useAppState() {
 
   const updateGroup = useCallback((index: number, group: Group) => {
     dispatch({ type: 'UPDATE_GROUP', index, group });
+  }, []);
+
+  const addNoteTag = useCallback((tag: NoteTagDefinition) => {
+    dispatch({ type: 'ADD_NOTE_TAG', tag });
+  }, []);
+
+  const updateNoteTag = useCallback((index: number, tag: NoteTagDefinition) => {
+    dispatch({ type: 'UPDATE_NOTE_TAG', index, tag });
   }, []);
 
   const getInterventionGroup = useCallback((interventionIndex: number): string | null => {
@@ -447,6 +471,8 @@ export function useAppState() {
     addGroup,
     removeGroup,
     updateGroup,
+    addNoteTag,
+    updateNoteTag,
     getInterventionGroup,
     rollTonight,
     markAsleep,

@@ -3,7 +3,7 @@ import { useAppState } from './hooks/useAppState';
 import { usePosterior } from './hooks/usePosterior';
 import { InterventionList } from './components/InterventionList';
 import { PendingNight } from './components/PendingNight';
-import { ObservationHistory, GroupManager, DataManager, UpdateReport } from './components/modals';
+import { ObservationHistory, GroupManager, NoteTagManager, DataManager, UpdateReport } from './components/modals';
 import { CovarianceMatrix, PrecisionMatrix } from './components/visualizations';
 import { UpdateReportData, Notes } from './types';
 
@@ -17,6 +17,8 @@ export default function App() {
     addGroup,
     removeGroup,
     updateGroup,
+    addNoteTag,
+    updateNoteTag,
     getInterventionGroup,
     rollTonight,
     markAsleep,
@@ -95,6 +97,11 @@ export default function App() {
             onAddGroup={addGroup}
             onRemoveGroup={removeGroup}
             onUpdateGroup={updateGroup}
+          />
+          <NoteTagManager
+            noteTagDefinitions={state.noteTagDefinitions}
+            onAdd={addNoteTag}
+            onUpdate={updateNoteTag}
           />
           <DataManager
             data={state}
