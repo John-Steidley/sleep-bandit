@@ -2,7 +2,7 @@
  * localStorage persistence layer for sleep-bandit data
  */
 
-import { AppState, Intervention, Observation } from '../types';
+import { AppState, Intervention } from '../types';
 import { DEFAULT_NOTE_TAG_DEFINITIONS } from './noteTags';
 
 const STORAGE_KEY = 'sleep-bandit-data';
@@ -31,34 +31,6 @@ function migrateInterventions(interventions: unknown[]): Intervention[] {
   return (interventions as string[]).map(name => ({ name, disabled: false }));
 }
 
-// MIGRATION (NOTE TAGS) — To remove:
-// 1. Delete migrateNoteTags() from src/lib/storage.ts
-// 2. Remove migrateNoteTags() call from loadData() in storage.ts
-// 3. Remove migrateNoteTags() call from importData in useAppState.ts
-// 4. Remove the import of migrateNoteTags from useAppState.ts
-export function migrateNoteTags(observations: unknown[]): Observation[] {
-  if (!observations || observations.length === 0) return observations as Observation[];
-
-  return (observations as Record<string, unknown>[]).map(obs => {
-    const notes = obs.notes as Record<string, unknown> | undefined;
-    if (!notes) return obs as unknown as Observation;
-
-    // Already migrated: has 'tags' array
-    if (Array.isArray(notes.tags)) return obs as unknown as Observation;
-
-    // Legacy format: convert boolean fields to Tag[]
-    const tags = [
-      { label: 'wokeUpLong', value: Boolean(notes.wokeUpLong) },
-      { label: 'nightmares', value: Boolean(notes.nightmares) },
-      { label: 'nightSweats', value: Boolean(notes.nightSweats) },
-    ];
-
-    return {
-      ...obs,
-      notes: { tags, text: (notes.text as string) || '' },
-    } as Observation;
-  });
-}
 
 export function loadData(): AppState {
   try {
@@ -71,7 +43,7 @@ export function loadData(): AppState {
         ...DEFAULT_STATE,
         ...parsed,
         interventions: migrateInterventions(parsed.interventions || []),
-        observations: migrateNoteTags(parsed.observations || []), // MIGRATION (NOTE TAGS)
+        observations: parsed.observations || [],
         groups: parsed.groups || [],
         config: { ...DEFAULT_STATE.config, ...parsed.config },
         noteTagDefinitions: parsed.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS

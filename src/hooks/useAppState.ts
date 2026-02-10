@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useCallback } from 'react';
 import { AppState, Group, Intervention, Notes, Observation, Posterior, StatisticalConfig } from '../types';
-import { loadData, saveData, migrateNoteTags } from '../lib/storage'; // MIGRATION (NOTE TAGS): remove migrateNoteTags import
+import { loadData, saveData } from '../lib/storage';
 import { DEFAULT_NOTE_TAG_DEFINITIONS } from '../lib/noteTags';
 import { sampleFromPosterior, computePosterior, probPositive } from '../lib/bayesian';
 import { UpdateReportData } from '../types';
@@ -371,7 +371,7 @@ export function useAppState() {
         type: 'IMPORT_DATA',
         data: {
           interventions: imported.interventions,
-          observations: migrateNoteTags(imported.observations), // MIGRATION (NOTE TAGS)
+          observations: imported.observations,
           pendingNight: imported.pendingNight || null,
           groups: imported.groups || [],
           config: imported.config || state.config,
