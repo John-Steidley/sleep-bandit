@@ -26,15 +26,15 @@ export function PrecisionMatrix({ interventions, precision }: PrecisionMatrixPro
   // Map precision to color
   // Use power curve to fade more toward grey near zero, brighter at extremes
   const getColor = (value: number): string => {
-    if (maxAbs === 0) return 'rgba(128, 128, 128, 0.15)';
+    if (maxAbs === 0) return 'rgba(var(--neutral-gray-rgb), 0.15)';
     const intensity = Math.abs(value) / maxAbs;
     const curved = intensity ** 2; // Faster fade near zero
     if (value > 0) {
-      return `rgba(34, 197, 94, ${0.08 + curved * 0.85})`;
+      return `rgba(var(--green-rgb), ${0.08 + curved * 0.85})`;
     } else if (value < 0) {
-      return `rgba(239, 68, 68, ${0.08 + curved * 0.85})`;
+      return `rgba(var(--red-rgb), ${0.08 + curved * 0.85})`;
     }
-    return 'rgba(128, 128, 128, 0.15)';
+    return 'rgba(var(--neutral-gray-rgb), 0.15)';
   };
 
   // Truncate long names
@@ -46,13 +46,13 @@ export function PrecisionMatrix({ interventions, precision }: PrecisionMatrixPro
   return (
     <div className="precision-matrix">
       <h3>Information Matrix (precision)</h3>
-      <p style={{ fontSize: '12px', color: '#9ca3af', margin: '0 0 12px 0', lineHeight: 1.4 }}>
+      <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '0 0 12px 0', lineHeight: 1.4 }}>
         How much information we have about each intervention's effect.
         Higher values indicate more certainty in our estimates.
       </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: '#9ca3af', marginBottom: '8px' }}>
-        <span><span style={{ display: 'inline-block', width: 12, height: 12, background: 'rgba(34, 197, 94, 0.6)', borderRadius: 2, marginRight: 4, verticalAlign: 'middle' }}></span>Diagonal: precision of individual estimates (higher = more certain)</span>
-        <span><span style={{ display: 'inline-block', width: 12, height: 12, background: 'rgba(239, 68, 68, 0.6)', borderRadius: 2, marginRight: 4, verticalAlign: 'middle' }}></span>Off-diagonal: how observations of one inform another</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+        <span><span style={{ display: 'inline-block', width: 12, height: 12, background: 'rgba(var(--green-rgb), 0.6)', borderRadius: 2, marginRight: 4, verticalAlign: 'middle' }}></span>Diagonal: precision of individual estimates (higher = more certain)</span>
+        <span><span style={{ display: 'inline-block', width: 12, height: 12, background: 'rgba(var(--red-rgb), 0.6)', borderRadius: 2, marginRight: 4, verticalAlign: 'middle' }}></span>Off-diagonal: how observations of one inform another</span>
       </div>
       <svg
         viewBox={`0 0 ${width} ${height}`}
@@ -67,7 +67,7 @@ export function PrecisionMatrix({ interventions, precision }: PrecisionMatrixPro
               y={padding + i * cellSize + cellSize / 2}
               textAnchor="end"
               dominantBaseline="middle"
-              fill="#9ca3af"
+              fill="var(--text-secondary)"
               fontSize="11"
               fontFamily="'IBM Plex Mono', monospace"
             >

@@ -96,7 +96,7 @@ export function NoteTagManager({
           <button className="close-btn" onClick={() => setIsOpen(false)}>x</button>
         </div>
 
-        <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
           Tags appear as checkboxes when recording your morning sleep score.
         </p>
 
@@ -137,7 +137,7 @@ export function NoteTagManager({
               onChange={(e) => setDescription(e.target.value)}
             />
             {isDuplicateLabel(label) && (
-              <p style={{ fontSize: '0.8rem', color: '#f87171', margin: '0 0 0.5rem 0' }}>
+              <p style={{ fontSize: '0.8rem', color: 'var(--red-light)', margin: '0 0 0.5rem 0' }}>
                 A tag with this label already exists.
               </p>
             )}

@@ -62,7 +62,7 @@ export function PosteriorCurve({ mean, std, minStd }: PosteriorCurveProps) {
         y1={height - padding}
         x2={width - padding}
         y2={height - padding}
-        stroke="rgba(255,255,255,0.1)"
+        stroke="rgba(var(--white-rgb),0.1)"
         strokeWidth="1"
         vectorEffect="non-scaling-stroke"
       />
@@ -72,7 +72,7 @@ export function PosteriorCurve({ mean, std, minStd }: PosteriorCurveProps) {
         y1={padding}
         x2={zeroX}
         y2={height - padding}
-        stroke="rgba(255,255,255,0.3)"
+        stroke="rgba(var(--white-rgb),0.3)"
         strokeWidth="1"
         strokeDasharray="2,2"
         vectorEffect="non-scaling-stroke"
@@ -80,18 +80,18 @@ export function PosteriorCurve({ mean, std, minStd }: PosteriorCurveProps) {
       {/* Negative filled area (red) */}
       <path
         d={negativeAreaD}
-        fill="rgba(239, 68, 68, 0.3)"
+        fill="rgba(var(--red-rgb), 0.3)"
       />
       {/* Positive filled area (green) */}
       <path
         d={positiveAreaD}
-        fill="rgba(34, 197, 94, 0.3)"
+        fill="rgba(var(--green-rgb), 0.3)"
       />
       {/* Curve stroke - split at zero */}
       <path
         d={negativePathD}
         fill="none"
-        stroke="#ef4444"
+        stroke="var(--red)"
         strokeWidth="1.5"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"
@@ -99,7 +99,7 @@ export function PosteriorCurve({ mean, std, minStd }: PosteriorCurveProps) {
       <path
         d={positivePathD}
         fill="none"
-        stroke="#22c55e"
+        stroke="var(--green)"
         strokeWidth="1.5"
         strokeLinecap="round"
         vectorEffect="non-scaling-stroke"

@@ -123,7 +123,7 @@ export function GroupManager({
           <button className="close-btn" onClick={() => setIsOpen(false)}>x</button>
         </div>
 
-        <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
           When rolling, only the highest-sampled intervention from each group will be selected (if positive).
         </p>
 

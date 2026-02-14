@@ -105,7 +105,7 @@ export function ChecklistManager({
           <button className="close-btn" onClick={() => setIsOpen(false)}>x</button>
         </div>
 
-        <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
           Items appear as checkboxes on the evening screen to help track your bedtime routine.
         </p>
 
@@ -147,7 +147,7 @@ export function ChecklistManager({
               onChange={(e) => setDescription(e.target.value)}
             />
             {isDuplicateLabel(label) && (
-              <p style={{ fontSize: '0.8rem', color: '#f87171', margin: '0 0 0.5rem 0' }}>
+              <p style={{ fontSize: '0.8rem', color: 'var(--red-light)', margin: '0 0 0.5rem 0' }}>
                 An item with this label already exists.
               </p>
             )}
