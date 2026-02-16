@@ -1,66 +1,38 @@
-/**
- * localStorage persistence layer for sleep-bandit data
- */
+import { EventLog, CURRENT_VERSION, migrateSnapshot, migrateLog } from './events';
 
-import { AppState, Intervention } from '../types';
-import { DEFAULT_NOTE_TAG_DEFINITIONS } from './noteTags';
+const OLD_STORAGE_KEY = 'sleep-bandit-data';
+const EVENT_LOG_KEY = 'sleep-bandit-events';
 
-const STORAGE_KEY = 'sleep-bandit-data';
-
-const DEFAULT_STATE: AppState = {
-  interventions: [],
-  observations: [],
-  pendingNight: null,
-  groups: [],
-  config: { baseline: 69, tau: 2.5, sigma: 12 },
-  noteTagDefinitions: DEFAULT_NOTE_TAG_DEFINITIONS,
-  checklistItems: []
-};
-
-/**
- * Migrate interventions from old string[] format to Intervention[] format
- */
-function migrateInterventions(interventions: unknown[]): Intervention[] {
-  if (!interventions || interventions.length === 0) return [];
-
-  // Check if already migrated (first item is an object with 'name' property)
-  if (typeof interventions[0] === 'object' && interventions[0] !== null && 'name' in interventions[0]) {
-    return interventions as Intervention[];
-  }
-
-  // Migrate from string[] to Intervention[]
-  return (interventions as string[]).map(name => ({ name, disabled: false }));
-}
-
-
-export function loadData(): AppState {
+export function loadEventLog(): EventLog {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    // Check for event log first
+    const raw = localStorage.getItem(EVENT_LOG_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw);
-      // Ensure groups array and config exist for backwards compatibility
-      // Migrate interventions from string[] to Intervention[] if needed
-      return {
-        ...DEFAULT_STATE,
-        ...parsed,
-        interventions: migrateInterventions(parsed.interventions || []),
-        observations: parsed.observations || [],
-        groups: parsed.groups || [],
-        config: { ...DEFAULT_STATE.config, ...parsed.config },
-        noteTagDefinitions: parsed.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS,
-        checklistItems: parsed.checklistItems || []
-      };
+      const parsed = JSON.parse(raw) as EventLog;
+      return migrateLog(parsed);
+    }
+
+    // Fall back to old snapshot format
+    const oldRaw = localStorage.getItem(OLD_STORAGE_KEY);
+    if (oldRaw) {
+      const snapshot = JSON.parse(oldRaw);
+      const log = migrateSnapshot(snapshot);
+      // Save migrated log and remove old key
+      saveEventLog(log);
+      localStorage.removeItem(OLD_STORAGE_KEY);
+      return log;
     }
   } catch (e) {
-    console.error('Failed to load data:', e);
+    console.error('Failed to load event log:', e);
   }
-  return DEFAULT_STATE;
+
+  return { version: CURRENT_VERSION, events: [] };
 }
 
-export function saveData(data: AppState): void {
+export function saveEventLog(log: EventLog): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem(EVENT_LOG_KEY, JSON.stringify(log));
   } catch (e) {
-    console.error('Failed to save data:', e);
+    console.error('Failed to save event log:', e);
   }
 }

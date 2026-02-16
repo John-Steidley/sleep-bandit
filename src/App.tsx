@@ -10,8 +10,8 @@ import { UpdateReportData, Notes } from './types';
 export default function App() {
   const {
     state,
+    eventLog,
     addIntervention,
-    removeIntervention,
     renameIntervention,
     toggleInterventionDisabled,
     addGroup,
@@ -24,12 +24,14 @@ export default function App() {
     removeChecklistItem,
     getInterventionGroup,
     rollTonight,
+    togglePendingIntervention,
+    checkChecklistItem,
+    toggleNoteTag,
     markAsleep,
     recordScore,
     previewScore,
     cancelPending,
     importData,
-    clearData,
     updateConfig
   } = useAppState();
 
@@ -113,9 +115,10 @@ export default function App() {
             onRemove={removeChecklistItem}
           />
           <DataManager
-            data={state}
+            eventLog={eventLog.current}
+            observationCount={state.observations.length}
+            interventionCount={state.interventions.length}
             onImport={importData}
-            onClear={clearData}
           />
         </div>
       </header>
@@ -145,6 +148,9 @@ export default function App() {
             onPreview={handlePreviewScore}
             onCancel={handleCancelPending}
             onSleep={markAsleep}
+            onTogglePendingIntervention={togglePendingIntervention}
+            onCheckChecklistItem={checkChecklistItem}
+            onToggleNoteTag={toggleNoteTag}
           />
         )}
 
@@ -177,7 +183,6 @@ export default function App() {
           displaySamples={displaySamples}
           tau={state.config.tau}
           getInterventionGroup={getInterventionGroup}
-          onRemove={removeIntervention}
           onRename={renameIntervention}
           onToggleDisabled={toggleInterventionDisabled}
           onAdd={addIntervention}

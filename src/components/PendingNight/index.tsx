@@ -12,6 +12,9 @@ interface PendingNightProps {
   onPreview: (score: number) => void;
   onCancel: () => void;
   onSleep: () => void;
+  onTogglePendingIntervention: (index: number, active: boolean) => void;
+  onCheckChecklistItem: (index: number, label: string, checked: boolean) => void;
+  onToggleNoteTag: (label: string, checked: boolean) => void;
 }
 
 export function PendingNight({
@@ -24,10 +27,12 @@ export function PendingNight({
   onRecordScore,
   onPreview,
   onCancel,
-  onSleep
+  onSleep,
+  onTogglePendingIntervention,
+  onCheckChecklistItem,
+  onToggleNoteTag
 }: PendingNightProps) {
   const [score, setScore] = useState('');
-  const [completed, setCompleted] = useState<Record<number, boolean>>({});
   const [checklistCompleted, setChecklistCompleted] = useState<Record<number, boolean>>({});
   const emptyNotes: Notes = {
     tags: noteTagDefinitions.map(d => ({ label: d.label, value: false })),
@@ -41,40 +46,24 @@ export function PendingNight({
   const predictedScoreAvg = useMemo(() => {
     let expected = baseline;
     for (let i = 0; i < interventions.length; i++) {
-      if (isAsleep) {
-        // Morning mode: assume all rolled interventions were completed
-        if (pending.interventions[i]) {
-          expected += posteriorMean[i] || 0;
-        }
-      } else {
-        // Night mode: based on checked interventions
-        if (completed[i]) {
-          expected += posteriorMean[i] || 0;
-        }
+      if (pending.interventions[i]) {
+        expected += posteriorMean[i] || 0;
       }
     }
     return expected;
-  }, [completed, posteriorMean, interventions.length, isAsleep, pending.interventions]);
+  }, [posteriorMean, interventions.length, pending.interventions]);
 
   // Compute predicted score using Thompson samples (sampled estimate)
   const predictedScoreSampled = useMemo(() => {
     let expected = baseline;
     const samples = pending.samples || [];
     for (let i = 0; i < interventions.length; i++) {
-      if (isAsleep) {
-        // Morning mode: assume all rolled interventions were completed
-        if (pending.interventions[i]) {
-          expected += samples[i] || 0;
-        }
-      } else {
-        // Night mode: based on checked interventions
-        if (completed[i]) {
-          expected += samples[i] || 0;
-        }
+      if (pending.interventions[i]) {
+        expected += samples[i] || 0;
       }
     }
     return expected;
-  }, [completed, pending.samples, interventions.length, isAsleep, pending.interventions]);
+  }, [pending.samples, interventions.length, pending.interventions]);
 
   const activeInterventions = interventions
     .map((name, i) => ({ name, index: i }))
@@ -87,7 +76,7 @@ export function PendingNight({
     if (isValidScore) {
       onRecordScore(numScore, notes);
       setScore('');
-      setCompleted({});
+      setChecklistCompleted({});
       setNotes(emptyNotes);
     }
   };
@@ -105,26 +94,29 @@ export function PendingNight({
   };
 
   const toggleCompleted = (index: number) => {
-    setCompleted(prev => ({
-      ...prev,
-      [index]: !prev[index]
-    }));
+    const newValue = !pending.interventions[index];
+    onTogglePendingIntervention(index, newValue);
   };
 
   const toggleTag = (tagLabel: string) => {
+    const currentTag = notes.tags.find(t => t.label === tagLabel);
+    const newValue = !(currentTag?.value ?? false);
     setNotes(prev => ({
       ...prev,
       tags: prev.tags.map(t =>
-        t.label === tagLabel ? { ...t, value: !t.value } : t
+        t.label === tagLabel ? { ...t, value: newValue } : t
       )
     }));
+    onToggleNoteTag(tagLabel, newValue);
   };
 
   const toggleChecklistItem = (index: number) => {
+    const newValue = !checklistCompleted[index];
     setChecklistCompleted(prev => ({
       ...prev,
-      [index]: !prev[index]
+      [index]: newValue
     }));
+    onCheckChecklistItem(index, checklistItems[index].label, newValue);
   };
 
   return (
@@ -152,12 +144,12 @@ export function PendingNight({
                 // Night mode: interactive checkboxes
                 <div
                   key={index}
-                  className={`intervention-checklist-item ${completed[index] ? 'completed' : ''}`}
+                  className={`intervention-checklist-item ${pending.interventions[index] ? 'completed' : ''}`}
                 >
                   <input
                     type="checkbox"
                     id={`intervention-${index}`}
-                    checked={completed[index] || false}
+                    checked={pending.interventions[index] || false}
                     onChange={() => toggleCompleted(index)}
                   />
                   <label htmlFor={`intervention-${index}`}>

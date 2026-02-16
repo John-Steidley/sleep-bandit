@@ -11,7 +11,6 @@ interface InterventionRowProps {
   sample: number | null;
   isActive: boolean;
   groupName: string | null;
-  onRemove: () => void;
   onRename: (newName: string) => void;
   onToggleDisabled: () => void;
 }
@@ -26,7 +25,6 @@ export function InterventionRow({
   sample,
   isActive,
   groupName,
-  onRemove,
   onRename,
   onToggleDisabled
 }: InterventionRowProps) {
@@ -112,7 +110,6 @@ export function InterventionRow({
           </div>
         )}
       </div>
-      <button className="remove-btn" onClick={onRemove} title="Remove intervention">x</button>
     </div>
   );
 }

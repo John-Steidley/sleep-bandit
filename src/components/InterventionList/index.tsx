@@ -9,7 +9,6 @@ interface InterventionListProps {
   displaySamples: number[] | null;
   tau: number;
   getInterventionGroup: (index: number) => string | null;
-  onRemove: (index: number) => void;
   onRename: (index: number, newName: string) => void;
   onToggleDisabled: (index: number) => void;
   onAdd: (name: string) => void;
@@ -21,7 +20,6 @@ export function InterventionList({
   displaySamples,
   tau,
   getInterventionGroup,
-  onRemove,
   onRename,
   onToggleDisabled,
   onAdd
@@ -55,7 +53,6 @@ export function InterventionList({
             sample={displaySamples ? displaySamples[i] : null}
             isActive={displaySamples ? displaySamples[i] > 0 : false}
             groupName={getInterventionGroup(i)}
-            onRemove={() => onRemove(i)}
             onRename={(newName) => onRename(i, newName)}
             onToggleDisabled={() => onToggleDisabled(i)}
           />

@@ -2,7 +2,7 @@
  * Bayesian Linear Regression for sleep intervention optimization
  */
 
-import { Observation, Posterior } from '../types';
+import { Posterior } from '../types';
 import {
   identity,
   transpose,
@@ -19,9 +19,14 @@ import {
  * Compute posterior distribution over intervention effects
  * using Bayesian linear regression with conjugate Gaussian prior
  */
+interface DenseObservation {
+  interventions: boolean[];
+  score: number;
+}
+
 export function computePosterior(
   interventions: string[],
-  observations: Observation[],
+  observations: DenseObservation[],
   config: { baseline: number; tau: number; sigma: number }
 ): Posterior {
   const { baseline, tau, sigma } = config;

@@ -1,20 +1,21 @@
 import { useState } from 'react';
 import { Modal } from './Modal';
-import { AppState } from '../../types';
+import { EventLog } from '../../lib/events';
 
 interface DataManagerProps {
-  data: AppState;
-  onImport: (data: Partial<AppState>, isFullBackup?: boolean) => void;
-  onClear: () => void;
+  eventLog: EventLog;
+  observationCount: number;
+  interventionCount: number;
+  onImport: (data: unknown, isFullBackup?: boolean) => void;
 }
 
-export function DataManager({ data, onImport, onClear }: DataManagerProps) {
+export function DataManager({ eventLog, observationCount, interventionCount, onImport }: DataManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [importText, setImportText] = useState('');
   const [importMode, setImportMode] = useState<'historical' | 'full'>('historical');
 
   const handleExport = () => {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(eventLog, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -37,12 +38,13 @@ export function DataManager({ data, onImport, onClear }: DataManagerProps) {
   const handleImportFull = () => {
     try {
       const parsed = JSON.parse(importText);
-      if (parsed.interventions && parsed.observations) {
+      // Accept either EventLog format or old AppState format
+      if ((parsed.version && parsed.events) || (parsed.interventions && parsed.observations)) {
         onImport(parsed, true);
         setImportText('');
         setIsOpen(false);
       } else {
-        alert('Invalid format. Must have interventions and observations arrays.');
+        alert('Invalid format. Must be an EventLog or have interventions and observations arrays.');
       }
     } catch {
       alert('Invalid JSON format.');
@@ -68,7 +70,7 @@ export function DataManager({ data, onImport, onClear }: DataManagerProps) {
         <h4>Export</h4>
         <button onClick={handleExport}>Download JSON</button>
         <p className="data-stats">
-          {data.interventions.length} interventions, {data.observations.length} nights recorded
+          {interventionCount} interventions, {observationCount} nights recorded, {eventLog.events.length} events
         </p>
       </div>
 
@@ -104,18 +106,6 @@ export function DataManager({ data, onImport, onClear }: DataManagerProps) {
         />
         <button onClick={importMode === 'historical' ? handleImportHistorical : handleImportFull}>
           Import
-        </button>
-      </div>
-
-      <div className="data-section danger">
-        <h4>Danger Zone</h4>
-        <button className="danger-btn" onClick={() => {
-          if (confirm('Are you sure? This will delete all data.')) {
-            onClear();
-            setIsOpen(false);
-          }
-        }}>
-          Clear All Data
         </button>
       </div>
     </Modal>

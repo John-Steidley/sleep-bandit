@@ -25,8 +25,10 @@ export interface StatisticalConfig {
 }
 
 export interface Observation {
-  date: string;
-  interventions: boolean[];
+  nightDate: string;
+  sleepDate: string;
+  recordDate: string;
+  activeInterventions: number[];
   score: number;
   notes?: Notes;
 }

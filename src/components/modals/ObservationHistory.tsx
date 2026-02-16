@@ -21,7 +21,7 @@ export function ObservationHistory({ observations, interventions, baseline, note
   }
 
   const sorted = [...observations].sort((a, b) =>
-    new Date(b.date).getTime() - new Date(a.date).getTime()
+    new Date(b.nightDate).getTime() - new Date(a.nightDate).getTime()
   );
 
   return (
@@ -35,16 +35,16 @@ export function ObservationHistory({ observations, interventions, baseline, note
           <p className="no-history">No observations yet</p>
         ) : (
           sorted.map((obs, idx) => {
-            const activeNames = interventions.filter((_, i) =>
-              obs.interventions && obs.interventions[i]
-            );
+            const activeNames = obs.activeInterventions
+              .filter(i => i < interventions.length)
+              .map(i => interventions[i]);
             const noteLabels = (obs.notes?.tags ?? [])
               .filter(t => t.value)
               .map(t => noteTagDefinitions.find(d => d.label === t.label)?.description ?? t.label);
             return (
               <div key={idx} className="history-item">
                 <span className="history-date">
-                  {new Date(obs.date).toLocaleDateString()}
+                  {new Date(obs.nightDate).toLocaleDateString()}
                 </span>
                 <span className={`history-score ${obs.score >= baseline ? 'good' : 'bad'}`}>
                   {obs.score}
