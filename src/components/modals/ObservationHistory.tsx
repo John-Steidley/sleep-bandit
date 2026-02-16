@@ -44,7 +44,7 @@ export function ObservationHistory({ observations, interventions, baseline, note
             return (
               <div key={idx} className="history-item">
                 <span className="history-date">
-                  {new Date(obs.date).toLocaleDateString()}
+                  {new Date(obs.date).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                 </span>
                 <span className={`history-score ${obs.score >= baseline ? 'good' : 'bad'}`}>
                   {obs.score}
