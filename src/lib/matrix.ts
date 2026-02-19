@@ -141,6 +141,13 @@ export function randn(): number {
 }
 
 /**
+ * Standard normal PDF: φ(x) = (1/√(2π)) × exp(-x²/2)
+ */
+export function normalPDF(x: number): number {
+  return Math.exp(-0.5 * x * x) / Math.sqrt(2 * Math.PI);
+}
+
+/**
  * Approximate normal CDF using Abramowitz and Stegun formula
  */
 export function normalCDF(x: number): number {

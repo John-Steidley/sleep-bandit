@@ -821,6 +821,22 @@ body {
   cursor: not-allowed;
 }
 
+.expected-improvement {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.expected-improvement span.positive {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.expected-improvement span.negative {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

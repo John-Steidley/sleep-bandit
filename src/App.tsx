@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useAppState } from './hooks/useAppState';
 import { usePosterior } from './hooks/usePosterior';
+import { expectedImprovement } from './lib/bayesian';
 import { InterventionList } from './components/InterventionList';
 import { PendingNight } from './components/PendingNight';
 import { ObservationHistory, GroupManager, NoteTagManager, ChecklistManager, DataManager, UpdateReport } from './components/modals';
@@ -82,6 +83,11 @@ export default function App() {
 
   const displaySamples = state.pendingNight?.samples || currentSamples;
 
+  const ei = useMemo(
+    () => expectedImprovement(state.interventions, posterior, state.groups || []),
+    [state.interventions, posterior, state.groups]
+  );
+
   return (
     <div className="sleep-bandit">
       <header className="header">
@@ -130,6 +136,11 @@ export default function App() {
             >
               {'\ud83c\udfb2'} Roll Tonight's Interventions
             </button>
+            {state.interventions.length > 0 && (
+              <div className="expected-improvement">
+                Expected improvement: <span className={ei >= 0 ? 'positive' : 'negative'}>{ei >= 0 ? '+' : ''}{ei.toFixed(1)}</span>
+              </div>
+            )}
           </section>
         )}
 
