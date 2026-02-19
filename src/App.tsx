@@ -23,6 +23,7 @@ export default function App() {
     addChecklistItem,
     updateChecklistItem,
     removeChecklistItem,
+    reorderChecklistItem,
     getInterventionGroup,
     rollTonight,
     markAsleep,
@@ -117,6 +118,7 @@ export default function App() {
             onAdd={addChecklistItem}
             onUpdate={updateChecklistItem}
             onRemove={removeChecklistItem}
+            onReorder={reorderChecklistItem}
           />
           <DataManager
             data={state}

@@ -6,13 +6,15 @@ interface ChecklistManagerProps {
   onAdd: (item: ChecklistItemDefinition) => void;
   onUpdate: (index: number, item: ChecklistItemDefinition) => void;
   onRemove: (index: number) => void;
+  onReorder: (fromIndex: number, toIndex: number) => void;
 }
 
 export function ChecklistManager({
   checklistItems,
   onAdd,
   onUpdate,
-  onRemove
+  onRemove,
+  onReorder
 }: ChecklistManagerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -118,6 +120,16 @@ export function ChecklistManager({
                 <div className="checklist-item-header">
                   <span className="checklist-item-name">{item.description}</span>
                   <div className="checklist-item-actions">
+                    <button
+                      onClick={() => onReorder(idx, idx - 1)}
+                      disabled={idx === 0}
+                      title="Move up"
+                    >{'\u2191'}</button>
+                    <button
+                      onClick={() => onReorder(idx, idx + 1)}
+                      disabled={idx === checklistItems.length - 1}
+                      title="Move down"
+                    >{'\u2193'}</button>
                     <button onClick={() => startEditing(idx)} title="Edit item">{'\u270f\ufe0f'}</button>
                     <button className="delete" onClick={() => handleRemove(idx)} title="Delete item">{'\ud83d\uddd1\ufe0f'}</button>
                   </div>

@@ -1894,7 +1894,12 @@ body {
   transition: color 0.2s;
 }
 
-.checklist-item-actions button:hover {
+.checklist-item-actions button:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.checklist-item-actions button:hover:not(:disabled) {
   color: var(--text-primary);
 }
 

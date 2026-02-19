@@ -18,6 +18,7 @@ type Action =
   | { type: 'ADD_CHECKLIST_ITEM'; item: ChecklistItemDefinition }
   | { type: 'UPDATE_CHECKLIST_ITEM'; index: number; item: ChecklistItemDefinition }
   | { type: 'REMOVE_CHECKLIST_ITEM'; index: number }
+  | { type: 'REORDER_CHECKLIST_ITEM'; fromIndex: number; toIndex: number }
   | { type: 'ROLL_TONIGHT'; samples: number[]; activeInterventions: boolean[] }
   | { type: 'MARK_ASLEEP' }
   | { type: 'RECORD_SCORE'; observation: Observation }
@@ -137,6 +138,13 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         checklistItems: (state.checklistItems || []).filter((_, i) => i !== action.index)
       };
+
+    case 'REORDER_CHECKLIST_ITEM': {
+      const items = [...(state.checklistItems || [])];
+      const [moved] = items.splice(action.fromIndex, 1);
+      items.splice(action.toIndex, 0, moved);
+      return { ...state, checklistItems: items };
+    }
 
     case 'ROLL_TONIGHT':
       return {
@@ -275,6 +283,10 @@ export function useAppState() {
 
   const removeChecklistItem = useCallback((index: number) => {
     dispatch({ type: 'REMOVE_CHECKLIST_ITEM', index });
+  }, []);
+
+  const reorderChecklistItem = useCallback((fromIndex: number, toIndex: number) => {
+    dispatch({ type: 'REORDER_CHECKLIST_ITEM', fromIndex, toIndex });
   }, []);
 
   const getInterventionGroup = useCallback((interventionIndex: number): string | null => {
@@ -514,6 +526,7 @@ export function useAppState() {
     addChecklistItem,
     updateChecklistItem,
     removeChecklistItem,
+    reorderChecklistItem,
     getInterventionGroup,
     rollTonight,
     markAsleep,
