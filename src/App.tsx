@@ -4,7 +4,7 @@ import { usePosterior } from './hooks/usePosterior';
 import { InterventionList } from './components/InterventionList';
 import { PendingNight } from './components/PendingNight';
 import { ObservationHistory, GroupManager, NoteTagManager, ChecklistManager, DataManager, UpdateReport } from './components/modals';
-import { CovarianceMatrix, PrecisionMatrix } from './components/visualizations';
+import { CovarianceMatrix, PrecisionMatrix, CooccurrenceMatrix } from './components/visualizations';
 import { UpdateReportData, Notes } from './types';
 
 export default function App() {
@@ -194,6 +194,13 @@ export default function App() {
           <PrecisionMatrix
             interventions={interventionNames}
             precision={posterior.precision}
+          />
+        )}
+
+        {state.interventions.length >= 2 && (
+          <CooccurrenceMatrix
+            interventions={interventionNames}
+            observations={state.observations}
           />
         )}
       </main>
