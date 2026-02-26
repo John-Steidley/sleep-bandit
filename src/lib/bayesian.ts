@@ -33,9 +33,16 @@ export function computePosterior(
   const tauSq = tau * tau;
   const sigmaSq = sigma * sigma;
 
-  const validObs = observations.filter(obs =>
-    obs.interventions && obs.interventions.length === k
-  );
+  // Normalize observation vectors to match current intervention count:
+  // pad short vectors with false, trim long vectors
+  const validObs = observations
+    .filter(obs => obs.interventions && obs.interventions.length > 0)
+    .map(obs => {
+      if (obs.interventions.length === k) return obs;
+      const normalized = obs.interventions.slice(0, k);
+      while (normalized.length < k) normalized.push(false);
+      return { ...obs, interventions: normalized };
+    });
   const n = validObs.length;
 
   const priorPrecision = scaleMatrix(identity(k), 1 / tauSq);

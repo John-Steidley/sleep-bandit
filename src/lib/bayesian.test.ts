@@ -64,16 +64,43 @@ describe('computePosterior', () => {
     expect(p.mean[0]).toBeGreaterThan(p.mean[1]);
   });
 
-  it('filters out observations with wrong intervention count', () => {
+  it('normalizes observations with mismatched intervention vector lengths', () => {
+    // Short vector: [true] should be padded to [true, false]
     const obs: Observation[] = [
-      { date: '2024-01-01', interventions: [true], score: 79 },       // wrong length
-      { date: '2024-01-02', interventions: [true, false], score: 79 }, // correct
+      { date: '2024-01-01', interventions: [true], score: 79 },
+      { date: '2024-01-02', interventions: [true, false], score: 79 },
     ];
     const p = computePosterior(['A', 'B'], obs, DEFAULT_CONFIG);
 
-    // Should still produce valid posterior (only 1 valid obs)
+    // Both observations should be used (not just the one with matching length)
     expect(p.mean).toHaveLength(2);
-    expect(p.std[0]).toBeLessThan(2.5); // some update happened
+    // With 2 obs both showing A active at score 79 (10 above baseline),
+    // posterior for A should be more shifted than with just 1 obs
+    const pSingleObs = computePosterior(['A', 'B'], [obs[1]], DEFAULT_CONFIG);
+    expect(p.mean[0]).toBeGreaterThan(pSingleObs.mean[0]);
+  });
+
+  it('normalizes observations with longer intervention vectors by trimming', () => {
+    // Long vector: [true, false, true] should be trimmed to [true, false]
+    const obs: Observation[] = [
+      { date: '2024-01-01', interventions: [true, false, true], score: 79 },
+    ];
+    const p = computePosterior(['A', 'B'], obs, DEFAULT_CONFIG);
+
+    expect(p.mean).toHaveLength(2);
+    expect(p.std[0]).toBeLessThan(2.5); // observation was used
+  });
+
+  it('filters out observations with empty intervention vectors', () => {
+    const obs: Observation[] = [
+      { date: '2024-01-01', interventions: [], score: 79 },
+      { date: '2024-01-02', interventions: [true, false], score: 79 },
+    ];
+    const p = computePosterior(['A', 'B'], obs, DEFAULT_CONFIG);
+
+    // Only the second observation should be used
+    expect(p.mean).toHaveLength(2);
+    expect(p.std[0]).toBeLessThan(2.5);
   });
 });
 

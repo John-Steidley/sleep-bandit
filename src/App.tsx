@@ -38,7 +38,6 @@ export default function App() {
   // Extract intervention names for components that need string[]
   const interventionNames = state.interventions.map(int => int.name);
 
-  const [currentSamples, setCurrentSamples] = useState<number[] | null>(null);
   const [updateReport, setUpdateReport] = useState<UpdateReportData | null>(null);
 
   const posterior = usePosterior(interventionNames, state.observations, state.config);
@@ -59,7 +58,6 @@ export default function App() {
 
   const handleRollTonight = () => {
     rollTonight(posterior);
-    setCurrentSamples(null);
   };
 
   const handleRecordScore = (score: number, notes: Notes) => {
@@ -67,7 +65,6 @@ export default function App() {
     if (report) {
       setUpdateReport(report);
     }
-    setCurrentSamples(null);
   };
 
   const handlePreviewScore = (score: number) => {
@@ -79,10 +76,9 @@ export default function App() {
 
   const handleCancelPending = () => {
     cancelPending();
-    setCurrentSamples(null);
   };
 
-  const displaySamples = state.pendingNight?.samples || currentSamples;
+  const displaySamples = state.pendingNight?.samples || null;
 
   const ei = useMemo(
     () => expectedImprovement(state.interventions, posterior, state.groups || []),
