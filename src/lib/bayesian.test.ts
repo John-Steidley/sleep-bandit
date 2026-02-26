@@ -64,34 +64,26 @@ describe('computePosterior', () => {
     expect(p.mean[0]).toBeGreaterThan(p.mean[1]);
   });
 
-  it('normalizes observations with mismatched intervention vector lengths', () => {
-    // Short vector: [true] should be padded to [true, false]
+  it('throws on observations with mismatched intervention vector lengths', () => {
     const obs: Observation[] = [
       { date: '2024-01-01', interventions: [true], score: 79 },
       { date: '2024-01-02', interventions: [true, false], score: 79 },
     ];
-    const p = computePosterior(['A', 'B'], obs, DEFAULT_CONFIG);
-
-    // Both observations should be used (not just the one with matching length)
-    expect(p.mean).toHaveLength(2);
-    // With 2 obs both showing A active at score 79 (10 above baseline),
-    // posterior for A should be more shifted than with just 1 obs
-    const pSingleObs = computePosterior(['A', 'B'], [obs[1]], DEFAULT_CONFIG);
-    expect(p.mean[0]).toBeGreaterThan(pSingleObs.mean[0]);
+    expect(() => computePosterior(['A', 'B'], obs, DEFAULT_CONFIG)).toThrow(
+      /Observation vector length mismatch/
+    );
   });
 
-  it('normalizes observations with longer intervention vectors by trimming', () => {
-    // Long vector: [true, false, true] should be trimmed to [true, false]
+  it('throws on observations with longer intervention vectors', () => {
     const obs: Observation[] = [
       { date: '2024-01-01', interventions: [true, false, true], score: 79 },
     ];
-    const p = computePosterior(['A', 'B'], obs, DEFAULT_CONFIG);
-
-    expect(p.mean).toHaveLength(2);
-    expect(p.std[0]).toBeLessThan(2.5); // observation was used
+    expect(() => computePosterior(['A', 'B'], obs, DEFAULT_CONFIG)).toThrow(
+      /Observation vector length mismatch/
+    );
   });
 
-  it('filters out observations with empty intervention vectors', () => {
+  it('ignores observations with empty intervention vectors', () => {
     const obs: Observation[] = [
       { date: '2024-01-01', interventions: [], score: 79 },
       { date: '2024-01-02', interventions: [true, false], score: 79 },

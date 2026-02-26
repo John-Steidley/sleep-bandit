@@ -179,14 +179,23 @@ function reducer(state: AppState, action: Action): AppState {
         pendingNight: null
       };
 
-    case 'IMPORT_DATA':
+    case 'IMPORT_DATA': {
+      const k = action.data.interventions.length;
+      const normalizedObs = action.data.observations.map(obs => {
+        if (!obs.interventions || obs.interventions.length === k) return obs;
+        const normalized = obs.interventions.slice(0, k);
+        while (normalized.length < k) normalized.push(false);
+        return { ...obs, interventions: normalized };
+      });
       return {
         ...action.data,
+        observations: normalizedObs,
         groups: action.data.groups || [],
         config: action.data.config || state.config,
         noteTagDefinitions: action.data.noteTagDefinitions || DEFAULT_NOTE_TAG_DEFINITIONS,
         checklistItems: action.data.checklistItems || []
       };
+    }
 
     case 'IMPORT_HISTORICAL':
       return {
