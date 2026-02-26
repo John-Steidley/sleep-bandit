@@ -7,6 +7,7 @@ interface InterventionListProps {
   interventions: Intervention[];
   posterior: Posterior;
   displaySamples: number[] | null;
+  activeInterventions: boolean[] | null;
   tau: number;
   getInterventionGroup: (index: number) => string | null;
   onRemove: (index: number) => void;
@@ -19,6 +20,7 @@ export function InterventionList({
   interventions,
   posterior,
   displaySamples,
+  activeInterventions,
   tau,
   getInterventionGroup,
   onRemove,
@@ -53,7 +55,7 @@ export function InterventionList({
             minStd={minStd}
             pPositive={probPositive(posterior.mean[i] || 0, posterior.std[i] || tau)}
             sample={displaySamples ? displaySamples[i] : null}
-            isActive={displaySamples ? displaySamples[i] > 0 : false}
+            isActive={activeInterventions ? activeInterventions[i] : false}
             groupName={getInterventionGroup(i)}
             onRemove={() => onRemove(i)}
             onRename={(newName) => onRename(i, newName)}

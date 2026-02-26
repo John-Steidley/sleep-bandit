@@ -188,6 +188,7 @@ export default function App() {
           interventions={state.interventions}
           posterior={posterior}
           displaySamples={displaySamples}
+          activeInterventions={state.pendingNight?.interventions || null}
           tau={state.config.tau}
           getInterventionGroup={getInterventionGroup}
           onRemove={removeIntervention}
