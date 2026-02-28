@@ -28,7 +28,7 @@ type Action =
   | { type: 'CLEAR_DATA' }
   | { type: 'UPDATE_CONFIG'; config: Partial<StatisticalConfig> };
 
-function reducer(state: AppState, action: Action): AppState {
+export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'ADD_INTERVENTION':
       if (state.interventions.some(int => int.name === action.name)) {
@@ -40,7 +40,12 @@ function reducer(state: AppState, action: Action): AppState {
         observations: state.observations.map(obs => ({
           ...obs,
           interventions: [...(obs.interventions || []), false]
-        }))
+        })),
+        pendingNight: state.pendingNight ? {
+          ...state.pendingNight,
+          interventions: [...state.pendingNight.interventions, false],
+          samples: [...(state.pendingNight.samples || []), 0]
+        } : null
       };
 
     case 'REMOVE_INTERVENTION':
