@@ -217,6 +217,7 @@ export default function App() {
         <MeanScoresTable
           interventions={interventionNames}
           observations={state.observations}
+          baseline={state.config.baseline}
         />
       </main>
 

@@ -3,10 +3,13 @@ import type { Observation } from '../../types';
 interface MeanScoresTableProps {
   interventions: string[];
   observations: Observation[];
+  baseline: number;
 }
 
-export function MeanScoresTable({ interventions, observations }: MeanScoresTableProps) {
+export function MeanScoresTable({ interventions, observations, baseline }: MeanScoresTableProps) {
   if (interventions.length === 0 || observations.length === 0) return null;
+
+  const overallMean = observations.reduce((sum, obs) => sum + obs.score, 0) / observations.length;
 
   const stats = interventions.map((name, i) => {
     let activeSum = 0, activeCount = 0;
@@ -34,6 +37,10 @@ export function MeanScoresTable({ interventions, observations }: MeanScoresTable
   return (
     <div className="covariance-matrix">
       <h3>Mean Sleep Scores</h3>
+      <div style={{ fontSize: '13px', fontFamily: "'IBM Plex Mono', monospace", margin: '0 0 12px 0', lineHeight: 1.8 }}>
+        <div>Baseline (user defined): <strong>{baseline}</strong></div>
+        <div>Mean Sleep Score (overall): <strong>{overallMean.toFixed(1)}</strong></div>
+      </div>
       <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '0 0 12px 0', lineHeight: 1.4 }}>
         Average sleep score when each intervention is active vs. inactive. Unlike the model estimates,
         these are raw averages that don't control for other interventions.
