@@ -44,8 +44,8 @@ export function MeanScoresTable({ interventions, observations }: MeanScoresTable
             <tr style={{ borderBottom: '1px solid rgba(var(--neutral-gray-rgb), 0.3)' }}>
               <th style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Intervention</th>
               <th style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Trials (Active)</th>
-              <th style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Mean (Active)</th>
               <th style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Trials (Inactive)</th>
+              <th style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Mean (Active)</th>
               <th style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Mean (Inactive)</th>
             </tr>
           </thead>
@@ -54,8 +54,8 @@ export function MeanScoresTable({ interventions, observations }: MeanScoresTable
               <tr key={s.name} style={{ borderBottom: '1px solid rgba(var(--neutral-gray-rgb), 0.12)' }}>
                 <td style={{ padding: '8px 12px', color: 'var(--text-primary)' }}>{s.name}</td>
                 <td style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-primary)' }}>{s.activeCount}</td>
-                <td style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-primary)' }}>{fmt(s.activeMean)}</td>
                 <td style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-primary)' }}>{s.inactiveCount}</td>
+                <td style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-primary)' }}>{fmt(s.activeMean)}</td>
                 <td style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-primary)' }}>{fmt(s.inactiveMean)}</td>
               </tr>
             ))}
