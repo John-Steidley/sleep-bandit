@@ -5,7 +5,7 @@ import { expectedImprovement } from './lib/bayesian';
 import { InterventionList } from './components/InterventionList';
 import { PendingNight } from './components/PendingNight';
 import { ObservationHistory, GroupManager, NoteTagManager, ChecklistManager, DataManager, UpdateReport } from './components/modals';
-import { CovarianceMatrix, PrecisionMatrix, CooccurrenceMatrix } from './components/visualizations';
+import { CovarianceMatrix, PrecisionMatrix, CooccurrenceMatrix, MeanScoresTable } from './components/visualizations';
 import { UpdateReportData, Notes } from './types';
 
 export default function App() {
@@ -213,6 +213,11 @@ export default function App() {
             observations={state.observations}
           />
         )}
+
+        <MeanScoresTable
+          interventions={interventionNames}
+          observations={state.observations}
+        />
       </main>
 
       {updateReport && (
