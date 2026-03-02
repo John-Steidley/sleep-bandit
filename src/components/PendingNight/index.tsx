@@ -27,8 +27,8 @@ export function PendingNight({
   onSleep
 }: PendingNightProps) {
   const [score, setScore] = useState('');
-  const [completed, setCompleted] = useState<Record<number, boolean>>({});
-  const [checklistCompleted, setChecklistCompleted] = useState<Record<number, boolean>>({});
+  const [completed, setCompleted] = useState<Record<string, boolean>>({});
+  const [checklistCompleted, setChecklistCompleted] = useState<Record<string, boolean>>({});
   const emptyNotes: Notes = {
     tags: noteTagDefinitions.map(d => ({ label: d.label, value: false })),
     text: ''
@@ -48,13 +48,13 @@ export function PendingNight({
         }
       } else {
         // Night mode: based on checked interventions
-        if (completed[i]) {
+        if (completed[interventions[i]]) {
           expected += posteriorMean[i] || 0;
         }
       }
     }
     return expected;
-  }, [completed, posteriorMean, interventions.length, isAsleep, pending.interventions]);
+  }, [completed, posteriorMean, interventions, isAsleep, pending.interventions]);
 
   // Compute predicted score using Thompson samples (sampled estimate)
   const predictedScoreSampled = useMemo(() => {
@@ -68,13 +68,13 @@ export function PendingNight({
         }
       } else {
         // Night mode: based on checked interventions
-        if (completed[i]) {
+        if (completed[interventions[i]]) {
           expected += samples[i] || 0;
         }
       }
     }
     return expected;
-  }, [completed, pending.samples, interventions.length, isAsleep, pending.interventions]);
+  }, [completed, pending.samples, interventions, isAsleep, pending.interventions]);
 
   const activeInterventions = interventions
     .map((name, i) => ({ name, index: i }))
@@ -104,10 +104,10 @@ export function PendingNight({
     }
   };
 
-  const toggleCompleted = (index: number) => {
+  const toggleCompleted = (name: string) => {
     setCompleted(prev => ({
       ...prev,
-      [index]: !prev[index]
+      [name]: !prev[name]
     }));
   };
 
@@ -120,10 +120,10 @@ export function PendingNight({
     }));
   };
 
-  const toggleChecklistItem = (index: number) => {
+  const toggleChecklistItem = (label: string) => {
     setChecklistCompleted(prev => ({
       ...prev,
-      [index]: !prev[index]
+      [label]: !prev[label]
     }));
   };
 
@@ -138,11 +138,11 @@ export function PendingNight({
           <p className="no-interventions">No interventions (baseline night)</p>
         ) : (
           <div className={`intervention-checklist ${isAsleep ? 'read-only' : ''}`}>
-            {activeInterventions.map(({ name, index }) => (
+            {activeInterventions.map(({ name }) => (
               isAsleep ? (
                 // Morning mode: read-only with green checkmarks
                 <div
-                  key={index}
+                  key={name}
                   className="intervention-checklist-item morning-complete"
                 >
                   <span className="check-icon">{'\u2713'}</span>
@@ -151,16 +151,16 @@ export function PendingNight({
               ) : (
                 // Night mode: interactive checkboxes
                 <div
-                  key={index}
-                  className={`intervention-checklist-item ${completed[index] ? 'completed' : ''}`}
+                  key={name}
+                  className={`intervention-checklist-item ${completed[name] ? 'completed' : ''}`}
                 >
                   <input
                     type="checkbox"
-                    id={`intervention-${index}`}
-                    checked={completed[index] || false}
-                    onChange={() => toggleCompleted(index)}
+                    id={`intervention-${name}`}
+                    checked={completed[name] || false}
+                    onChange={() => toggleCompleted(name)}
                   />
-                  <label htmlFor={`intervention-${index}`}>
+                  <label htmlFor={`intervention-${name}`}>
                     {name}
                   </label>
                 </div>
@@ -171,18 +171,18 @@ export function PendingNight({
         {!isAsleep && checklistItems.length > 0 && (
           <div className="evening-checklist">
             <div className="evening-checklist-divider" />
-            {checklistItems.map((item, idx) => (
+            {checklistItems.map((item) => (
               <div
-                key={idx}
-                className={`evening-checklist-item ${checklistCompleted[idx] ? 'completed' : ''}`}
+                key={item.label}
+                className={`evening-checklist-item ${checklistCompleted[item.label] ? 'completed' : ''}`}
               >
                 <input
                   type="checkbox"
-                  id={`checklist-${idx}`}
-                  checked={checklistCompleted[idx] || false}
-                  onChange={() => toggleChecklistItem(idx)}
+                  id={`checklist-${item.label}`}
+                  checked={checklistCompleted[item.label] || false}
+                  onChange={() => toggleChecklistItem(item.label)}
                 />
-                <label htmlFor={`checklist-${idx}`}>
+                <label htmlFor={`checklist-${item.label}`}>
                   {item.description}
                 </label>
               </div>
