@@ -1,3 +1,5 @@
+import { useMatrixTooltip, MatrixTooltip } from './MatrixTooltip';
+
 interface PrecisionMatrixProps {
   interventions: string[];
   precision: number[][];
@@ -5,6 +7,7 @@ interface PrecisionMatrixProps {
 
 export function PrecisionMatrix({ interventions, precision }: PrecisionMatrixProps) {
   const n = interventions.length;
+  const { tooltip, onCellEnter, onCellMove, onCellLeave } = useMatrixTooltip();
   if (n < 2) return null;
 
   // Cell size and layout
@@ -14,25 +17,31 @@ export function PrecisionMatrix({ interventions, precision }: PrecisionMatrixPro
   const width = labelWidth + n * cellSize + padding * 2;
   const height = n * cellSize + padding * 2;
 
-  // Find max absolute precision for scaling colors
-  let maxAbs = 0;
+  // Find max absolute precision separately for diagonal and off-diagonal
+  // so off-diagonal values aren't crushed by the much larger diagonal
+  let maxAbsDiag = 0;
+  let maxAbsOff = 0;
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
       const absVal = Math.abs(precision[i][j]);
-      if (absVal > maxAbs) maxAbs = absVal;
+      if (i === j) {
+        if (absVal > maxAbsDiag) maxAbsDiag = absVal;
+      } else {
+        if (absVal > maxAbsOff) maxAbsOff = absVal;
+      }
     }
   }
 
-  // Map precision to color
-  // Use power curve to fade more toward grey near zero, brighter at extremes
-  const getColor = (value: number): string => {
-    if (maxAbs === 0) return 'rgba(var(--neutral-gray-rgb), 0.15)';
-    const intensity = Math.abs(value) / maxAbs;
-    const curved = intensity ** 2; // Faster fade near zero
+  // Map precision to color, scaling off-diagonal independently
+  const getColor = (value: number, isDiag: boolean): string => {
+    const maxRef = isDiag ? maxAbsDiag : maxAbsOff;
+    if (maxRef === 0) return 'rgba(var(--neutral-gray-rgb), 0.15)';
+    const intensity = Math.abs(value) / maxRef;
+    const curved = intensity ** 0.6; // Gentler curve to spread out mid-range values
     if (value > 0) {
-      return `rgba(var(--green-rgb), ${0.08 + curved * 0.85})`;
+      return `rgba(var(--green-rgb), ${0.1 + curved * 0.85})`;
     } else if (value < 0) {
-      return `rgba(var(--red-rgb), ${0.08 + curved * 0.85})`;
+      return `rgba(var(--red-rgb), ${0.1 + curved * 0.85})`;
     }
     return 'rgba(var(--neutral-gray-rgb), 0.15)';
   };
@@ -54,44 +63,48 @@ export function PrecisionMatrix({ interventions, precision }: PrecisionMatrixPro
         <span><span style={{ display: 'inline-block', width: 12, height: 12, background: 'rgba(var(--green-rgb), 0.6)', borderRadius: 2, marginRight: 4, verticalAlign: 'middle' }}></span>Diagonal: precision of individual estimates (higher = more certain)</span>
         <span><span style={{ display: 'inline-block', width: 12, height: 12, background: 'rgba(var(--red-rgb), 0.6)', borderRadius: 2, marginRight: 4, verticalAlign: 'middle' }}></span>Off-diagonal: how observations of one inform another</span>
       </div>
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        style={{ width: '100%', maxWidth: width }}
-      >
-        {/* Row labels and cells */}
-        {interventions.map((intervention, i) => (
-          <g key={i}>
-            {/* Row label */}
-            <text
-              x={labelWidth - 8}
-              y={padding + i * cellSize + cellSize / 2}
-              textAnchor="end"
-              dominantBaseline="middle"
-              fill="var(--text-secondary)"
-              fontSize="11"
-              fontFamily="'IBM Plex Mono', monospace"
-            >
-              {truncateName(intervention)}
-            </text>
-            {/* Cells for this row */}
-            {interventions.map((_, j) => (
-              <rect
-                key={j}
-                x={labelWidth + j * cellSize}
-                y={padding + i * cellSize}
-                width={cellSize - 2}
-                height={cellSize - 2}
-                fill={getColor(precision[i][j])}
-                rx={3}
+      <div style={{ position: 'relative' }}>
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          style={{ width: '100%', maxWidth: width, display: 'block' }}
+        >
+          {/* Row labels and cells */}
+          {interventions.map((intervention, i) => (
+            <g key={i}>
+              {/* Row label */}
+              <text
+                x={labelWidth - 8}
+                y={padding + i * cellSize + cellSize / 2}
+                textAnchor="end"
+                dominantBaseline="middle"
+                fill="var(--text-secondary)"
+                fontSize="11"
+                fontFamily="'IBM Plex Mono', monospace"
               >
-                <title>
-                  {intervention} × {interventions[j]}: {precision[i][j].toFixed(3)}
-                </title>
-              </rect>
-            ))}
-          </g>
-        ))}
-      </svg>
+                {truncateName(intervention)}
+              </text>
+              {/* Cells for this row */}
+              {interventions.map((_, j) => (
+                <rect
+                  key={j}
+                  x={labelWidth + j * cellSize}
+                  y={padding + i * cellSize}
+                  width={cellSize}
+                  height={cellSize}
+                  fill={getColor(precision[i][j], i === j)}
+                  rx={3}
+                  stroke="var(--bg-panel-dark)"
+                  strokeWidth={2}
+                  onMouseEnter={(e) => onCellEnter(e, `${intervention} \u00d7 ${interventions[j]}: ${precision[i][j].toFixed(3)}`)}
+                  onMouseMove={onCellMove}
+                  onMouseLeave={onCellLeave}
+                />
+              ))}
+            </g>
+          ))}
+        </svg>
+        <MatrixTooltip tooltip={tooltip} />
+      </div>
     </div>
   );
 }

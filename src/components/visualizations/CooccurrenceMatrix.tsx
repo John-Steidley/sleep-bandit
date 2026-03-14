@@ -1,4 +1,5 @@
 import type { Observation } from '../../types';
+import { useMatrixTooltip, MatrixTooltip } from './MatrixTooltip';
 
 interface CooccurrenceMatrixProps {
   interventions: string[];
@@ -7,6 +8,7 @@ interface CooccurrenceMatrixProps {
 
 export function CooccurrenceMatrix({ interventions, observations }: CooccurrenceMatrixProps) {
   const n = interventions.length;
+  const { tooltip, onCellEnter, onCellMove, onCellLeave } = useMatrixTooltip();
   if (n < 2) return null;
 
   // Build co-occurrence counts
@@ -43,60 +45,66 @@ export function CooccurrenceMatrix({ interventions, observations }: Cooccurrence
         How many nights each pair of interventions was active together.
         Diagonal shows how many nights each individual intervention was used.
       </p>
-      <svg
-        viewBox={`0 0 ${width} ${height}`}
-        style={{ width: '100%', maxWidth: width }}
-      >
-        {interventions.map((intervention, i) => (
-          <g key={i}>
-            <text
-              x={labelWidth - 8}
-              y={padding + i * cellSize + cellSize / 2}
-              textAnchor="end"
-              dominantBaseline="middle"
-              fill="var(--text-secondary)"
-              fontSize="11"
-              fontFamily="'IBM Plex Mono', monospace"
-            >
-              {truncateName(intervention)}
-            </text>
-            {interventions.map((_, j) => {
-              const count = counts[i][j];
-              const isDiagonal = i === j;
-              return (
-                <g key={j}>
-                  <rect
-                    x={labelWidth + j * cellSize}
-                    y={padding + i * cellSize}
-                    width={cellSize - 2}
-                    height={cellSize - 2}
-                    fill={isDiagonal ? 'rgba(var(--neutral-gray-rgb), 0.25)' : 'rgba(var(--neutral-gray-rgb), 0.12)'}
-                    rx={3}
-                  >
-                    <title>
-                      {isDiagonal
-                        ? `${intervention}: used ${count} night${count !== 1 ? 's' : ''}`
-                        : `${intervention} × ${interventions[j]}: co-occurred ${count} night${count !== 1 ? 's' : ''}`}
-                    </title>
-                  </rect>
-                  <text
-                    x={labelWidth + j * cellSize + (cellSize - 2) / 2}
-                    y={padding + i * cellSize + (cellSize - 2) / 2}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    fill="var(--text-primary)"
-                    fontSize={count >= 100 ? '9' : '11'}
-                    fontFamily="'IBM Plex Mono', monospace"
-                    fontWeight={isDiagonal ? 'bold' : 'normal'}
-                  >
-                    {count}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
-        ))}
-      </svg>
+      <div style={{ position: 'relative' }}>
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          style={{ width: '100%', maxWidth: width, display: 'block' }}
+        >
+          {interventions.map((intervention, i) => (
+            <g key={i}>
+              <text
+                x={labelWidth - 8}
+                y={padding + i * cellSize + cellSize / 2}
+                textAnchor="end"
+                dominantBaseline="middle"
+                fill="var(--text-secondary)"
+                fontSize="11"
+                fontFamily="'IBM Plex Mono', monospace"
+              >
+                {truncateName(intervention)}
+              </text>
+              {interventions.map((_, j) => {
+                const count = counts[i][j];
+                const isDiagonal = i === j;
+                const tooltipText = isDiagonal
+                  ? `${intervention}: used ${count} night${count !== 1 ? 's' : ''}`
+                  : `${intervention} \u00d7 ${interventions[j]}: co-occurred ${count} night${count !== 1 ? 's' : ''}`;
+                return (
+                  <g key={j}>
+                    <rect
+                      x={labelWidth + j * cellSize}
+                      y={padding + i * cellSize}
+                      width={cellSize}
+                      height={cellSize}
+                      fill={isDiagonal ? 'rgba(var(--neutral-gray-rgb), 0.25)' : 'rgba(var(--neutral-gray-rgb), 0.12)'}
+                      rx={3}
+                      stroke="var(--bg-panel-dark)"
+                      strokeWidth={2}
+                      onMouseEnter={(e) => onCellEnter(e, tooltipText)}
+                      onMouseMove={onCellMove}
+                      onMouseLeave={onCellLeave}
+                    />
+                    <text
+                      x={labelWidth + j * cellSize + cellSize / 2}
+                      y={padding + i * cellSize + cellSize / 2}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      fill="var(--text-primary)"
+                      fontSize={count >= 100 ? '9' : '11'}
+                      fontFamily="'IBM Plex Mono', monospace"
+                      fontWeight={isDiagonal ? 'bold' : 'normal'}
+                      style={{ pointerEvents: 'none' }}
+                    >
+                      {count}
+                    </text>
+                  </g>
+                );
+              })}
+            </g>
+          ))}
+        </svg>
+        <MatrixTooltip tooltip={tooltip} />
+      </div>
     </div>
   );
 }
