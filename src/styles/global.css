@@ -416,7 +416,6 @@ body {
 }
 
 .intervention-row.disabled .intervention-name-text {
-  text-decoration: line-through;
   color: var(--text-muted);
 }
 
