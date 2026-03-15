@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PosteriorCurve, UncertaintyBar, ProbabilityBar } from '../visualizations';
+import { PosteriorCurve } from '../visualizations';
 
 interface InterventionRowProps {
   name: string;
@@ -85,32 +85,25 @@ export function InterventionRow({
           </div>
         )}
       </div>
-      <div className={`intervention-stats ${sample !== null ? 'with-sample' : ''}`}>
-        <div className="stat effect">
+      <div className="intervention-stats">
+        <PosteriorCurve mean={mean} std={std} minStd={minStd} pPositive={pPositive} />
+        <div className="stat info">
           <div className="stat-header">
             <span className="stat-label">Effect estimate</span>
             <span className={`stat-value ${mean > 0 ? 'positive' : mean < 0 ? 'negative' : ''}`}>
               {mean > 0 ? '+' : ''}{mean.toFixed(1)} <span className="stat-unit">+/-{std.toFixed(1)}</span>
             </span>
           </div>
-          <div className="effect-viz">
-            <PosteriorCurve mean={mean} std={std} minStd={minStd} />
-            <UncertaintyBar mean={mean} std={std} />
-          </div>
+          {sample !== null && (
+            <div className="stat-sample">
+              <span className="stat-label">Tonight</span>
+              <span className={`stat-value ${sample > 0 ? 'positive' : 'negative'}`}>
+                {sample > 0 ? '+' : ''}{sample.toFixed(2)}
+                {sample > 0 ? ' \u2713' : ' \u2717'}
+              </span>
+            </div>
+          )}
         </div>
-        <div className="stat prob">
-          <span className="stat-label">P(helpful)</span>
-          <ProbabilityBar probability={pPositive} />
-        </div>
-        {sample !== null && (
-          <div className="stat sample">
-            <span className="stat-label">Tonight</span>
-            <span className={`stat-value ${sample > 0 ? 'positive' : 'negative'}`}>
-              {sample > 0 ? '+' : ''}{sample.toFixed(2)}
-              {sample > 0 ? ' \u2713' : ' \u2717'}
-            </span>
-          </div>
-        )}
       </div>
       <button className="remove-btn" onClick={onRemove} title="Remove intervention">x</button>
     </div>

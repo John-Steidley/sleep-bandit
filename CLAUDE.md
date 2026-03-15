@@ -7,7 +7,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 npm run dev      # Start dev server with HMR
 npm run build    # TypeScript compile + production build to dist/
-npm run preview  # Preview production build
 ```
 
 ## Architecture
@@ -46,7 +45,3 @@ Sleep Bandit is a React/TypeScript app that uses Thompson Sampling (Bayesian ban
 - **PendingNight/**: Shows tonight's recommended interventions, collects sleep score
 - **InterventionList/**: Displays all interventions with posterior statistics and visualizations
 - **modals/**: Data import/export, observation history, group management, update reports
-
-### Build
-
-Uses vite-plugin-singlefile to bundle everything into a single HTML file for offline use.
