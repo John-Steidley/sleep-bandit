@@ -35,7 +35,7 @@ export function MeanScoresTable({ interventions, observations, baseline }: MeanS
   const fmt = (v: number | null) => v !== null ? v.toFixed(1) : '—';
 
   return (
-    <div className="covariance-matrix">
+    <div className="vis-card">
       <h3>Mean Sleep Scores</h3>
       <div style={{ fontSize: '13px', fontFamily: "'IBM Plex Mono', monospace", margin: '0 0 12px 0', lineHeight: 1.8 }}>
         <div>Baseline (user defined): <strong>{baseline}</strong></div>
@@ -48,7 +48,7 @@ export function MeanScoresTable({ interventions, observations, baseline }: MeanS
       <div style={{ overflowX: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'IBM Plex Mono', monospace", fontSize: '13px' }}>
           <thead>
-            <tr style={{ borderBottom: '1px solid rgba(var(--neutral-gray-rgb), 0.3)' }}>
+            <tr>
               <th style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Intervention</th>
               <th style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Trials (Active)</th>
               <th style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Trials (Inactive)</th>
@@ -58,7 +58,7 @@ export function MeanScoresTable({ interventions, observations, baseline }: MeanS
           </thead>
           <tbody>
             {stats.map((s) => (
-              <tr key={s.name} style={{ borderBottom: '1px solid rgba(var(--neutral-gray-rgb), 0.12)' }}>
+              <tr key={s.name}>
                 <td style={{ padding: '8px 12px', color: 'var(--text-primary)' }}>{s.name}</td>
                 <td style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-primary)' }}>{s.activeCount}</td>
                 <td style={{ textAlign: 'right', padding: '8px 12px', color: 'var(--text-primary)' }}>{s.inactiveCount}</td>

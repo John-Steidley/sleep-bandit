@@ -39,7 +39,7 @@ export function CooccurrenceMatrix({ interventions, observations }: Cooccurrence
   };
 
   return (
-    <div className="covariance-matrix">
+    <div className="vis-card">
       <h3>Co-occurrence Matrix</h3>
       <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '0 0 12px 0', lineHeight: 1.4 }}>
         How many nights each pair of interventions was active together.

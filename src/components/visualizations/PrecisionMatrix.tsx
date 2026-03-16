@@ -53,7 +53,7 @@ export function PrecisionMatrix({ interventions, precision }: PrecisionMatrixPro
   };
 
   return (
-    <div className="precision-matrix">
+    <div className="vis-card">
       <h3>Information Matrix (precision)</h3>
       <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: '0 0 12px 0', lineHeight: 1.4 }}>
         How much information we have about each intervention's effect.
